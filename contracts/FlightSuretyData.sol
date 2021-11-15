@@ -99,7 +99,7 @@ contract FlightSuretyData {
     *
     */   
     function registerAirline
-                            (   
+                            (
                             )
                             external
                             pure
@@ -144,8 +144,17 @@ contract FlightSuretyData {
     {
     }
 
-   /**
-    * @dev Initial funding for the insurance. Unless there are too many delayed flights
+    // function to authorize addresses (especially the App contract!) to call functions from flighSuretyData contract
+    function authorizeCaller(address callerAddress)
+    external
+    // requireContractOwner
+    // requireIsOperational
+    {
+        // authorizedCallers[callerAddress] = true;
+    }
+
+    /**
+     * @dev Initial funding for the insurance. Unless there are too many delayed flights
     *      resulting in insurance payouts, the contract should be self-sustaining
     *
     */   
@@ -155,6 +164,19 @@ contract FlightSuretyData {
                             public
                             payable
     {
+    }
+
+    function isAirline (
+        address airline
+    )
+    external
+    view
+    returns (bool) {
+        // if (airlines[airline].airlineWallet == airline) {
+        // return true;
+        // } else {
+        return false;
+        // }
     }
 
     function getFlightKey

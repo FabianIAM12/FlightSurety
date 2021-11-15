@@ -14,7 +14,7 @@ contract('Flight Surety Tests', async (accounts) => {
   /* Operations and Settings                                                              */
   /****************************************************************************************/
 
-  it(`(multiparty) has correct initial isOperational() value`, async function () {
+  it(`1 (multiparty) has correct initial isOperational() value`, async function () {
 
     // Get operating status
     let status = await config.flightSuretyData.isOperational.call();
@@ -22,7 +22,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
   });
 
-  it(`(multiparty) can block access to setOperatingStatus() for non-Contract Owner account`, async function () {
+  it(`2 (multiparty) can block access to setOperatingStatus() for non-Contract Owner account`, async function () {
 
       // Ensure that access is denied for non-Contract Owner account
       let accessDenied = false;
@@ -37,7 +37,7 @@ contract('Flight Surety Tests', async (accounts) => {
             
   });
 
-  it(`(multiparty) can allow access to setOperatingStatus() for Contract Owner account`, async function () {
+  it(`3 (multiparty) can allow access to setOperatingStatus() for Contract Owner account`, async function () {
 
       // Ensure that access is allowed for Contract Owner account
       let accessDenied = false;
@@ -52,7 +52,7 @@ contract('Flight Surety Tests', async (accounts) => {
       
   });
 
-  it(`(multiparty) can block access to functions using requireIsOperational when operating status is false`, async function () {
+  it(`4 (multiparty) can block access to functions using requireIsOperational when operating status is false`, async function () {
 
       await config.flightSuretyData.setOperatingStatus(false);
 
@@ -71,7 +71,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
   });
 
-  it('(airline) cannot register an Airline using registerAirline() if it is not funded', async () => {
+  it('5 (airline) cannot register an Airline using registerAirline() if it is not funded', async () => {
     
     // ARRANGE
     let newAirline = accounts[2];
