@@ -8,6 +8,10 @@ import { AdministrationComponent } from './administration/administration.compone
 import { AirlineComponent } from './airline/airline.component';
 import { PassengerComponent } from './passenger/passenger.component';
 import { OraclesComponent } from './oracles/oracles.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {MatButtonModule} from "@angular/material/button";
+import {MatFormFieldModule} from "@angular/material/form-field";
 
 @NgModule({
   declarations: [
@@ -20,7 +24,11 @@ import { OraclesComponent } from './oracles/oracles.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgbModule
+    NgbModule,
+    BrowserAnimationsModule,
+    MatButtonToggleModule,
+    MatButtonModule,
+    MatFormFieldModule
   ],
   providers: [],
   bootstrap: [AppComponent]
