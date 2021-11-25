@@ -9,9 +9,10 @@ import { AirlineComponent } from './airline/airline.component';
 import { PassengerComponent } from './passenger/passenger.component';
 import { OraclesComponent } from './oracles/oracles.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatButtonToggleModule} from "@angular/material/button-toggle";
-import {MatButtonModule} from "@angular/material/button";
-import {MatFormFieldModule} from "@angular/material/form-field";
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { MatButtonModule } from "@angular/material/button";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import {MatFormFieldModule} from "@angular/material/form-field";
     BrowserAnimationsModule,
     MatButtonToggleModule,
     MatButtonModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatInputModule
   ],
   providers: [],
   bootstrap: [AppComponent]
