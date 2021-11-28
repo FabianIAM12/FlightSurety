@@ -91,6 +91,14 @@ contract FlightSuretyApp {
         return true;  // Modify to call data contract's status
     }
 
+    function test()
+    public
+    pure
+    returns(bool)
+    {
+        return true;  // Modify to call data contract's status
+    }
+
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/

@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AdministrationComponent } from "./administration/administration.component";
-import {AirlineComponent} from "./airline/airline.component";
-import {OraclesComponent} from "./oracles/oracles.component";
-import {PassengerComponent} from "./passenger/passenger.component";
+import { AdministrationComponent } from "./components/administration/administration.component";
+import {AirlineComponent} from "./components/airline/airline.component";
+import {OraclesComponent} from "./components/oracles/oracles.component";
+import {PassengerComponent} from "./components/passenger/passenger.component";
 
 const routes: Routes = [
   { path: '', redirectTo: '/administration', pathMatch: 'full' },

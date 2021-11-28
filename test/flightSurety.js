@@ -18,8 +18,8 @@ contract('Flight Surety Tests', async (accounts) => {
 
     // Get operating status
     let status = await config.flightSuretyData.isOperational.call();
+    console.log(status);
     assert.equal(status, true, "Incorrect initial operating status value");
-
   });
 
   it(`2 (multiparty) can block access to setOperatingStatus() for non-Contract Owner account`, async function () {
