@@ -25,14 +25,13 @@ import { MatInputModule } from "@angular/material/input";
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgbModule,
     BrowserAnimationsModule,
     MatButtonToggleModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule
   ],
-  providers: [],
+  providers: [NgbModule],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

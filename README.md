@@ -27,6 +27,16 @@ To view dapp:
 
 `http://localhost:8000`
 
+To use the angular dapp:
+
+`truffle migrate`
+change to folder
+`ng serve`
+
+To view dapp2:
+
+`http://localhost:4200`
+
 ## Develop Server
 
 `npm run server`
