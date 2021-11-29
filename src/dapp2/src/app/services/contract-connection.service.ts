@@ -7,7 +7,7 @@ import * as Config from "../../../config.json";
 @Injectable({
   providedIn: 'root'
 })
-export class ContractConnectionService implements AfterViewInit {
+export class ContractConnectionService {
   private readonly network = 'localhost';
   private web3: Web3;
   private flightSuretyApp: any;
@@ -22,14 +22,11 @@ export class ContractConnectionService implements AfterViewInit {
     let config = Config[this.network];
     this.web3 = new Web3(new Web3.providers.HttpProvider(config.url));
     this.flightSuretyApp = new this.web3.eth.Contract(FlightSuretyApp.abi, config.appAddress);
-    this.flightSuretyData = new this.web3.eth.Contract(FlightSuretyData.abi, config.appAddress);
+    this.flightSuretyData = new this.web3.eth.Contract(FlightSuretyData.abi, config.dataAddress);
 
     this.owner = null;
     this.airlines = [];
     this.passengers = [];
-  }
-
-  public ngAfterViewInit() {
     this.setAccounts();
   }
 
@@ -45,9 +42,40 @@ export class ContractConnectionService implements AfterViewInit {
     return this.flightSuretyData.methods.isOperational()
   }
 
-  public async setOperationalData(state: boolean, from: any) {
-    let result = await this.flightSuretyData.setOperatingStatus(state);
-    console.log(result);
+  public getDataAddress() {
+    return this.flightSuretyData._address;
+  }
+
+  public getAppAddress() {
+    return this.flightSuretyData._address;
+  }
+
+  public fetchFlightStatus(flight: any) {
+    let payload = {
+      airline: this.airlines[0],
+      flight: flight,
+      timestamp: Math.floor(Date.now() / 1000)
+    }
+
+    /*
+    this.flightSuretyApp.methods
+      .fetchFlightStatus(payload.airline, payload.flight, payload.timestamp)
+      .send({ from: this.owner}, (error: any, result: any) => {
+        console.log(error, result);
+      });
+    */
+  }
+
+  public setOperationalData(state: boolean, from: any) {
+    console.log(this.owner);
+
+    this.flightSuretyData.methods.setOperatingStatus(false)
+      .send({from: this.owner})
+      .then((receipt: any) => {
+        console.log(receipt);
+      }).catch((err: any) => {
+        console.error(err);
+    });
   }
 
   public setOperationalApp() { }

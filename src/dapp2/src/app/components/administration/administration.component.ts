@@ -23,8 +23,7 @@ export class AdministrationComponent implements AfterViewInit {
   }
 
   onValChangeData(value: boolean): void {
-    this.contractConnectionService.setOperationalData(value, this.contractConnectionService.owner).call(false, { from: this.contractConnectionService.owner});
-
+    this.contractConnectionService.setOperationalData(value, this.contractConnectionService.owner);
     /*
     this.contractConnectionService.setOperationalData(value).call(true, { from: this.contractConnectionService.owner}, (error: any, result: any) => {
       console.log('result');

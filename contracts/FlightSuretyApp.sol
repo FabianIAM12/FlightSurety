@@ -149,7 +149,7 @@ contract FlightSuretyApp {
     }
 
 
-    // Generate a request for oracles to fetch flight information
+    // Generate a request for oracles to fetch flight informatsetOperatingStatusion
     function fetchFlightStatus
                         (
                             address airline,
