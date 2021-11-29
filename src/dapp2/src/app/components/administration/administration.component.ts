@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component} from '@angular/core';
 import {ContractConnectionService} from "../../services/contract-connection.service";
 
 @Component({
@@ -7,13 +7,34 @@ import {ContractConnectionService} from "../../services/contract-connection.serv
   styleUrls: ['./administration.component.scss']
 })
 export class AdministrationComponent implements AfterViewInit {
-  public operationalStatus = false;
+  public operationalStatusData = false;
+  public operationalStatusApp = false;
 
   constructor(private contractConnectionService: ContractConnectionService) { }
 
   ngAfterViewInit(): void {
-    this.contractConnectionService.isOperational().call({ from: this.contractConnectionService.owner}, (error: any, result: any) => {
-      this.operationalStatus = result;
+    this.contractConnectionService.isOperationalApp().call({ from: this.contractConnectionService.owner}, (error: any, result: any) => {
+      this.operationalStatusData = result;
     });
+
+    this.contractConnectionService.isOperationalData().call({ from: this.contractConnectionService.owner}, (error: any, result: any) => {
+      this.operationalStatusApp = result;
+    });
+  }
+
+  onValChangeData(value: boolean): void {
+    this.contractConnectionService.setOperationalData(value, this.contractConnectionService.owner).call(false, { from: this.contractConnectionService.owner});
+
+    /*
+    this.contractConnectionService.setOperationalData(value).call(true, { from: this.contractConnectionService.owner}, (error: any, result: any) => {
+      console.log('result');
+      console.log(result);
+      console.log('error');
+      console.log(error);
+    }); */
+  }
+
+  onValChangeApp(value: boolean): void {
+    console.log(value);
   }
 }

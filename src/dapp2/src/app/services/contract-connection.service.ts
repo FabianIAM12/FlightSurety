@@ -16,6 +16,8 @@ export class ContractConnectionService implements AfterViewInit {
   private airlines: any;
   private passengers: any;
 
+  private config: any;
+
   constructor() {
     let config = Config[this.network];
     this.web3 = new Web3(new Web3.providers.HttpProvider(config.url));
@@ -31,10 +33,24 @@ export class ContractConnectionService implements AfterViewInit {
     this.setAccounts();
   }
 
-  public isOperational() {
-    return this.flightSuretyApp.methods
-      .isOperational()
+  public getDeployedAddress(): any {
+    return this.config.localhost
   }
+
+  public isOperationalApp() {
+    return this.flightSuretyApp.methods.isOperational()
+  }
+
+  public isOperationalData() {
+    return this.flightSuretyData.methods.isOperational()
+  }
+
+  public async setOperationalData(state: boolean, from: any) {
+    let result = await this.flightSuretyData.setOperatingStatus(state);
+    console.log(result);
+  }
+
+  public setOperationalApp() { }
 
   private setAccounts() {
     this.web3.eth.getAccounts((error, accounts: string[]) => {
