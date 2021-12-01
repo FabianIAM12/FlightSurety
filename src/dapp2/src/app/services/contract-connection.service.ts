@@ -13,7 +13,8 @@ export class ContractConnectionService {
   private flightSuretyApp: any;
   private flightSuretyData: any;
   public owner: any;
-  private airlines: any;
+
+  private readonly airlines: any;
   private passengers: any;
 
   private config: any;
@@ -47,7 +48,17 @@ export class ContractConnectionService {
   }
 
   public getAppAddress() {
-    return this.flightSuretyData._address;
+    return this.flightSuretyApp._address;
+  }
+
+  public authorizeCaller(caller: string) {
+    return this.flightSuretyData.methods.authorizeContract(caller)
+      .send({from: this.owner})
+      .then((receipt: any) => {
+        console.log(receipt);
+      }).catch((err: any) => {
+        console.error(err);
+    });
   }
 
   public fetchFlightStatus(flight: any) {
@@ -66,19 +77,25 @@ export class ContractConnectionService {
     */
   }
 
-  public setOperationalData(state: boolean, from: any) {
-    console.log(this.owner);
-
-    this.flightSuretyData.methods.setOperatingStatus(false)
+  public setOperationalData(value: boolean) {
+    this.flightSuretyData.methods.setOperatingStatus(value)
       .send({from: this.owner})
-      .then((receipt: any) => {
-        console.log(receipt);
+      .then((res: any) => {
+        console.log(res);
+      }).catch((err: any) => {
+        console.error(err);
+      });
+  }
+
+  public setOperationalApp(value: boolean) {
+    this.flightSuretyApp.methods.setOperatingStatus(true)
+      .send({from: this.owner})
+      .then((res: any) => {
+        console.log(res);
       }).catch((err: any) => {
         console.error(err);
     });
   }
-
-  public setOperationalApp() { }
 
   private setAccounts() {
     this.web3.eth.getAccounts((error, accounts: string[]) => {

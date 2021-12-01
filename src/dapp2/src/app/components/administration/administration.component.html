@@ -1,18 +1,20 @@
 <h1>Contract Administration</h1>
 <h2>Welcome to flight surety blockchain insurence</h2>
 
-<h3>Deployed Address</h3>
-<p>0xA463BB5c313BA752108254435a11Ba296cc86B11</p>
+<h3>Deployed Address Data</h3>
+<p>{{ getDataAddress() }}</p>
+<h3>Deployed Address App</h3>
+<p>{{ getAppAddress() }}</p>
 
 <h3>Operational Status (data)</h3>
-<mat-button-toggle-group name="fontStyle" aria-label="Font Style" value="{{ operationalStatusData}}" (change)="onValChangeData($event.value)">
+<mat-button-toggle-group name="fontStyle" aria-label="Font Style" value="{{ operationalStatusData}}" (change)="onValChangeData()">
   <mat-button-toggle value="true">Active</mat-button-toggle>
   <mat-button-toggle value="false">Inactive</mat-button-toggle>
 </mat-button-toggle-group>
 <br>
 
 <h3>Operational Status (app)</h3>
-<mat-button-toggle-group name="fontStyle" aria-label="Font Style"  value="{{ operationalStatusApp }}" (change)="onValChangeApp($event.value)">
+<mat-button-toggle-group name="fontStyle" aria-label="Font Style"  value="{{ operationalStatusApp }}" (change)="onValChangeApp()">
   <mat-button-toggle value="true">Active</mat-button-toggle>
   <mat-button-toggle value="false">Inactive</mat-button-toggle>
 </mat-button-toggle-group>
@@ -22,6 +24,6 @@
 
 <mat-form-field appearance="fill">
   <mat-label>Input</mat-label>
-  <input matInput>
+  <input matInput [(ngModel)]="authorizeAddress">
 </mat-form-field>
-<button mat-button color="primary">Primary</button>
+<button mat-button color="primary" (click)="sendAuthorize()">Authorize</button>

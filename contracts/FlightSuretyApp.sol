@@ -25,6 +25,7 @@ contract FlightSuretyApp {
     uint8 private constant STATUS_CODE_LATE_OTHER = 50;
 
     address private contractOwner;          // Account used to deploy contract
+        bool private operational = false;
 
     struct Flight {
         bool isRegistered;
@@ -50,8 +51,17 @@ contract FlightSuretyApp {
     modifier requireIsOperational() 
     {
          // Modify to call data contract's status
-        require(true, "Contract is currently not operational");  
+        require(operational == true, "Contract is currently not operational");
         _;  // All modifiers require an "_" which indicates where the function body will be added
+    }
+
+    /**
+    * @dev Modifier that requires the "ContractOwner" account to be the function caller
+    */
+    modifier onlyOwner()
+    {
+        require(msg.sender == contractOwner, "Caller is not authorized");
+        _;
     }
 
     /**
@@ -83,20 +93,18 @@ contract FlightSuretyApp {
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
 
-    function isOperational() 
-                            public 
-                            pure 
-                            returns(bool) 
-    {
-        return true;  // Modify to call data contract's status
+    function isOperational() public view returns (bool) {
+        return operational;
     }
 
-    function test()
-    public
-    pure
-    returns(bool)
+    function setOperatingStatus(
+        bool mode
+    )
+    external
+    onlyOwner
     {
-        return true;  // Modify to call data contract's status
+        require(mode != operational, "Contract is already in this state");
+        operational = mode;
     }
 
     /********************************************************************************************/

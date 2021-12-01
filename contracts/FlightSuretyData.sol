@@ -10,7 +10,8 @@ contract FlightSuretyData {
     /********************************************************************************************/
 
     address private contractOwner;                                      // Account used to deploy contract
-    bool private operational = true;                                    // Blocks all state changes throughout the contract if false
+    bool private operational = false;                                    // Blocks all state changes throughout the contract if false
+    mapping (address => bool) authorizedContracts;
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
@@ -43,7 +44,7 @@ contract FlightSuretyData {
     */
     modifier requireIsOperational()
     {
-        require(operational, "Contract is currently not operational");
+        require(operational == true, "Contract is currently not operational");
         _;
         // All modifiers require an "_" which indicates where the function body will be added
     }
@@ -141,12 +142,12 @@ contract FlightSuretyData {
     }
 
     // function to authorize addresses (especially the App contract!) to call functions from flighSuretyData contract
-    function authorizeCaller(address callerAddress)
+    function authorizeContract(address callerAddress)
     external
-        // requireContractOwner
-        // requireIsOperational
+        requireContractOwner
+        requireIsOperational
     {
-        // authorizedCallers[callerAddress] = true;
+        authorizedContracts[callerAddress] = true;
     }
 
     /**

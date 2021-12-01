@@ -9,31 +9,40 @@ import {ContractConnectionService} from "../../services/contract-connection.serv
 export class AdministrationComponent implements AfterViewInit {
   public operationalStatusData = false;
   public operationalStatusApp = false;
+  public authorizeAddress = '';
 
   constructor(private contractConnectionService: ContractConnectionService) { }
 
+  getDataAddress(): string {
+    return this.contractConnectionService.getDataAddress();
+  }
+
+  getAppAddress(): string {
+    return this.contractConnectionService.getAppAddress();
+  }
+
+  sendAuthorize(): any {
+    return this.contractConnectionService.authorizeCaller(this.authorizeAddress);
+  }
+
   ngAfterViewInit(): void {
+    /*
     this.contractConnectionService.isOperationalApp().call({ from: this.contractConnectionService.owner}, (error: any, result: any) => {
       this.operationalStatusData = result;
-    });
+    }); */
 
     this.contractConnectionService.isOperationalData().call({ from: this.contractConnectionService.owner}, (error: any, result: any) => {
-      this.operationalStatusApp = result;
+      this.operationalStatusData = result;
     });
   }
 
-  onValChangeData(value: boolean): void {
-    this.contractConnectionService.setOperationalData(value, this.contractConnectionService.owner);
-    /*
-    this.contractConnectionService.setOperationalData(value).call(true, { from: this.contractConnectionService.owner}, (error: any, result: any) => {
-      console.log('result');
-      console.log(result);
-      console.log('error');
-      console.log(error);
-    }); */
+  onValChangeData(): void {
+    this.operationalStatusData = !this.operationalStatusData;
+    this.contractConnectionService.setOperationalData(this.operationalStatusData);
   }
 
-  onValChangeApp(value: boolean): void {
-    console.log(value);
+  onValChangeApp(): void {
+    this.operationalStatusApp = !this.operationalStatusApp;
+    this.contractConnectionService.setOperationalApp(this.operationalStatusApp);
   }
 }
