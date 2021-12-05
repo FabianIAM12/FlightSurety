@@ -9,8 +9,10 @@ contract FlightSuretyData {
     /*                                       DATA VARIABLES                                     */
     /********************************************************************************************/
 
-    address private contractOwner;                                      // Account used to deploy contract
-    bool private operational = false;                                    // Blocks all state changes throughout the contract if false
+    // Account used to deploy contract
+    address private contractOwner;
+    // Blocks all state changes throughout the contract if false
+    bool private operational = true;
     mapping (address => bool) authorizedContracts;
 
     /********************************************************************************************/
@@ -22,12 +24,10 @@ contract FlightSuretyData {
     * @dev Constructor
     *      The deploying account becomes contractOwner
     */
-    constructor
-    (
-    )
-    public
-    {
+    constructor(bytes32 name) public {
         contractOwner = msg.sender;
+        // airlines[msg.sender] = Airline(name, true, false);
+        // numberOfAirlines = numberOfAirlines.add(1);
     }
 
     /********************************************************************************************/
@@ -39,7 +39,7 @@ contract FlightSuretyData {
 
     /**
     * @dev Modifier that requires the "operational" boolean variable to be "true"
-    *      This is used on all state changing functions to pause the contract in 
+    *      This is used on all state changing functions to pause the contract in
     *      the event there is an issue that needs to be fixed
     */
     modifier requireIsOperational()
@@ -77,7 +77,8 @@ contract FlightSuretyData {
     *
     * When operational mode is disabled, all write transactions except for this one will fail
     */
-    function setOperatingStatus(
+    function setOperatingStatus
+    (
         bool mode
     )
     external
@@ -163,19 +164,6 @@ contract FlightSuretyData {
     {
     }
 
-    function isAirline(
-        address airline
-    )
-    external
-    view
-    returns (bool) {
-        // if (airlines[airline].airlineWallet == airline) {
-        // return true;
-        // } else {
-        return false;
-        // }
-    }
-
     function getFlightKey
     (
         address airline,
@@ -202,4 +190,3 @@ contract FlightSuretyData {
 
 
 }
-

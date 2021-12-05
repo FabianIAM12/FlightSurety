@@ -3,18 +3,24 @@
 <h3>Airline Address</h3>
 <mat-form-field appearance="fill">
   <mat-label>Input</mat-label>
-  <input matInput>
+  <input matInput [(ngModel)]="airlineAddress">
 </mat-form-field>
 <h3>Airline Name</h3>
 <mat-form-field appearance="fill">
   <mat-label>Input</mat-label>
-  <input matInput>
+  <input matInput [(ngModel)]="airlineName">
 </mat-form-field>
 <h3>Found Airline</h3>
 <mat-form-field appearance="fill">
   <mat-label>Input</mat-label>
-  <input matInput>
+  <input matInput [(ngModel)]="airlineName">
 </mat-form-field>
+
+<h2>REGISTER AIRLINE</h2>
+
+<button mat-button style="background: lightgrey" (click)="registerAirline()">Register / found Airline</button>
+<button mat-button style="background: lightgrey" (click)="foundAirline()">Vote Airline</button>
+<hr>
 <h2>Register new flight</h2>
 <h3>Flight number</h3>
 <mat-form-field appearance="fill">
@@ -26,6 +32,5 @@
   <mat-label>Input</mat-label>
   <input matInput>
 </mat-form-field>
-<button mat-button color="primary">Primary1</button>
-<button mat-button color="primary">Primary2</button>
-<button mat-button color="primary">Primary3</button>
+
+<button mat-button style="background: lightgrey">Primary3</button>

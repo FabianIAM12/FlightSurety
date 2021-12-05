@@ -88,12 +88,22 @@ export class ContractConnectionService {
   }
 
   public setOperationalApp(value: boolean) {
-    this.flightSuretyApp.methods.setOperatingStatus(true)
+    this.flightSuretyApp.methods.setOperatingStatus(value)
       .send({from: this.owner})
       .then((res: any) => {
         console.log(res);
       }).catch((err: any) => {
         console.error(err);
+    });
+  }
+
+  public registerAirline(address: string, name: string) {
+    this.flightSuretyApp.methods.registerAirline(address, this.web3.utils.utf8ToHex(name))
+      .send({from: this.owner})
+      .then((res: any) => {
+        console.log(res);
+      }).catch((err: any) => {
+      console.error(err);
     });
   }
 
