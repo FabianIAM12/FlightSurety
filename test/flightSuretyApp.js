@@ -17,22 +17,22 @@ contract('Flight Surety Tests', async (accounts) => {
     const owner = accounts[0];
     const tenEther = web3.utils.toWei('0.00000001', 'ether');
     const oneEther = web3.utils.toWei('0.0000000001', 'ether');
+    const fiveEther = web3.utils.toWei('0.0000000005', 'ether');
     const zeroAddress = '0x0000000000000000000000000000000000000000';
 
     var contract;
     before('setup contract', async () => {
-        contract = await Test.Config(accounts, web3.utils.utf8ToHex(firstAirline), {from:owner});
+        contract = await Test.Config(accounts);
         await contract.flightSuretyData.authorizeCaller(contract.flightSuretyApp.address);
 
-        await contract.flightSuretyData.authorizeContract(contract.flightSuretyApp.address, {from: owner});
-        await contract.flightSuretyData.authorizeContract(owner, {from: owner});
+        // await contract.flightSuretyData.authorizeCaller(contract.flightSuretyApp.address, {from: owner});
+        // await contract.flightSuretyData.authorizeContract(owner, {from: owner});
     });
 
     /****************************************************************************************/
     /* Operations and Settings                                                              */
     /****************************************************************************************/
 
-    /*
     it(`(multiparty) has correct initial isOperational() value`, async function () {
         let status = await contract.flightSuretyData.isOperational.call();
         assert.equal(status, true, "Incorrect initial operating status value");
@@ -60,6 +60,7 @@ contract('Flight Surety Tests', async (accounts) => {
         assert.equal(accessDenied, false, "Access not restricted to Contract Owner");
     });
 
+    /*
     it('should NOT allow unauthorized users to setOperatingStatus', async () => {
         await expectToRevert(contract.flightSuretyApp.setOperatingStatus(false, {from: accounts[1]}), 'Caller is not contract owner');
     });
@@ -223,38 +224,6 @@ contract('Flight Surety Tests', async (accounts) => {
         const flightThree = await contract.flightSuretyApp.getFlightDetails.call(flights[2], {from: accounts[7]});
         expectFlightToHaveProperties(flightThree, accounts[2], 'LT3234', 1122334477, 0);
     }); */
-
-    it('should allow to buyInsurance for a registered flight, transfer the eth to dataContract, credit balance of airline and emit event', async() => {
-        // record passenger, dataContract and airline (credited balance) before the purchase of insurance
-        const passengerWalletBalanceBefore = await web3.eth.getBalance(accounts[2]);
-        const dataContractWalletBalanceBefore = await web3.eth.getBalance(contract.flightSuretyApp.address);
-        const airlineBalanceBefore = await contract.flightSuretyData.getBalanceOfAirline(owner, {from: owner});
-
-        //purchase the insurance and assert events and insurance has the correct properties
-        let tx = await contract.flightSuretyApp.buyInsurance(flightNumberOne, {from: accounts[2], value: oneEther});
-        truffleAssert.eventEmitted(tx, 'InsurancePurchased', (ev) => {
-            return expect(ev.passenger).to.deep.equal(accounts[2])
-                && expect(web3.utils.hexToUtf8(ev.flightNumber)).to.equal('LT3214')
-                && expect(Number(ev.amount)).to.equal(Number(oneEther));
-        });
-
-        flightKey = (await contract.flightSuretyData.getFlightDetails.call(flightNumberOne, {from: owner}))[4];
-        const insuranceKey = web3.utils.soliditySha3(accounts[2], flightKey, 0);
-        const insuranceDetails = await contract.flightSuretyData.getInsuranceDetails(insuranceKey, {from: owner});
-
-        expect(insuranceDetails[0]).to.equal(accounts[2]);
-        expect(Number(insuranceDetails[1])).to.equal(Number(oneEther));
-        expect(insuranceDetails[2]).to.be.false;
-
-        // get the After balances and check if there is a 1 eth difference between them.
-        /*
-        const passengerWalletBalanceAfter = await web3.eth.getBalance(accounts[2]);
-        const dataContractWalletBalanceAfter = await web3.eth.getBalance(dataContract.address);
-        const airlineBalanceAfter = await dataContract.getBalanceOfAirline(owner, {from: owner});
-        expect(Number(passengerWalletBalanceBefore) - Number(passengerWalletBalanceAfter)).to.be.above(Number(oneEther));
-        expect(Number(dataContractWalletBalanceAfter) - Number(dataContractWalletBalanceBefore)).to.equal(Number(oneEther));
-        expect(Number(airlineBalanceAfter) - Number(airlineBalanceBefore)).to.equal(Number(oneEther)); */
-    });
 });
 
 const expectToRevert = (promise, errorMessage) => {

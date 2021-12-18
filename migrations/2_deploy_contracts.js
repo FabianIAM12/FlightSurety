@@ -2,38 +2,33 @@ const FlightSuretyApp = artifacts.require("FlightSuretyApp");
 const FlightSuretyData = artifacts.require("FlightSuretyData");
 const fs = require('fs');
 
-/*
-module.exports = function(deployer) {
-
-    let firstAirline = '0xf17f52151EbEF6C7334FAD080c5704D77216b732';
-    deployer.deploy(FlightSuretyData, web3.utils.utf8ToHex('Lufthansa'))
-    .then((x) => {
-        return deployer.deploy(FlightSuretyApp, FlightSuretyData.address)
-                .then(() => {
-                    let config = {
-                        localhost: {
-                            url: 'http://localhost:1234',
-                            dataAddress: FlightSuretyData.address,
-                            appAddress: FlightSuretyApp.address
-                        }
-                    }
-                    fs.writeFileSync(__dirname + '/../src/dapp/config.json',JSON.stringify(config, null, '\t'), 'utf-8');
-                    fs.writeFileSync(__dirname + '/../src/server/config.json',JSON.stringify(config, null, '\t'), 'utf-8');
-                });
-    });
-}
-*/
-
 module.exports = async (deployer) => {
-    await deployer.deploy(FlightSuretyData, web3.utils.utf8ToHex('Lufthansa'));
-    await deployer.deploy(FlightSuretyApp, FlightSuretyData.address);
+
+    // hard-coded value, based on wallet seed
+    // this is account #1 (#0 is deployer)
+    let firstAirline = '0x152f499FC0F79658a03f594529A2464CAc722D1D';
+    let firstAirlineName = 'Lufthansa';
+
+    await deployer.deploy(FlightSuretyData, firstAirline, firstAirlineName);
+    let data = await FlightSuretyData.deployed();
+
+    await deployer.deploy(FlightSuretyApp, data.address);
+    let app = await FlightSuretyApp.deployed();
+
+    await data.authorizeCaller(app.address);
+
+    // get the gas limit
+    let block = await web3.eth.getBlock("latest");
+
     let config = {
         localhost: {
             url: 'http://localhost:1234',
-            dataAddress: FlightSuretyData.address,
-            appAddress: FlightSuretyApp.address
+            dataAddress: data.address,
+            appAddress: app.address,
+            gas: block.gasLimit
         }
-    }
-    fs.writeFileSync(__dirname + '/../src/dapp/config.json',JSON.stringify(config, null, '\t'), 'utf-8');
-    fs.writeFileSync(__dirname + '/../src/server/config.json',JSON.stringify(config, null, '\t'), 'utf-8');
-}
+    };
+
+    fs.writeFileSync(__dirname + '/../src/dapp/config.json',JSON.stringify(config, null, '  '), 'utf-8');
+    fs.writeFileSync(__dirname + '/../src/server/config.json',JSON.stringify(config, null, '  '), 'utf-8');
+};
