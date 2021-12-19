@@ -38,7 +38,7 @@ contract FlightSuretyData {
     mapping(address => address[]) private voters;   // list of voters for an airline
     uint256 public numAirlines;                     // number of airlines, registered or unregistered
     uint256 public numRegisteredAirlines;           // number of registered airlines
-    uint256 public numFundedAirlines;               // number of funded airlines
+    uint256 public numberOfFundedAirlines;               // number of funded airlines
 
     // funds, should match web3.eth.getBalance(data contract's account);
     uint256 private totalFunds;                     // total funds available
@@ -55,8 +55,7 @@ contract FlightSuretyData {
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
 
-
-    event AirlineSentFunds(address airline, uint256 amount, uint256 totalsent);
+    event AirlineGotFunds(address airline, uint256 amount, uint256 totalsent);
     event AirlineRegistered(address airline, string name);
     event AirlineFunded(address airline, string name);
 
@@ -212,9 +211,9 @@ contract FlightSuretyData {
         if (numRegisteredAirlines < 4) {
             require(airlines[registeringAirline].isFunded, "Caller is not a funded airline");
 
-            Airline memory a = newAirline(address_, name_);
-            a.isRegistered = true;
-            airlines[address_] = a;
+            Airline memory air = newAirline(address_, name_);
+            air.isRegistered = true;
+            airlines[address_] = air;
             numAirlines = numAirlines.add(1);
             numRegisteredAirlines = numRegisteredAirlines.add(1);
             emit AirlineRegistered(address_, name_);
@@ -269,7 +268,7 @@ contract FlightSuretyData {
             votes[address_] = votes[address_].add(1);
         }
 
-        if (votes[address_] > numFundedAirlines.div(2)) {
+        if (votes[address_] > numberOfFundedAirlines.div(2)) {
             airlines[address_].isRegistered = true;
             numRegisteredAirlines = numRegisteredAirlines.add(1);
             delete votes[address_];
@@ -306,7 +305,7 @@ contract FlightSuretyData {
      */
     function isAirlineFunded(address address_) external view requireAppCaller() returns (bool, uint256)
     {
-        return (airlines[address_].isFunded, numFundedAirlines);
+        return (airlines[address_].isFunded, numberOfFundedAirlines);
     }
 
     function registerFlight(address airline_, string calldata name_, uint256 timestamp)
@@ -317,7 +316,6 @@ contract FlightSuretyData {
     returns (bytes32)
     {
         bytes32 key = getFlightKey(airline_, name_, timestamp);
-
         if (flights[key].isRegistered && flights[key].statusCode == 0) {
             // nothing to do, already registered and has no flight data
             return key;
@@ -338,7 +336,7 @@ contract FlightSuretyData {
      * @dev Buy insurance for a flight
      *
      */
-    function buyInsurance(address passenger, uint amount, address airline, string calldata name, uint256 timestamp)
+    function buyFlightInsurance(address passenger, uint amount, address airline, string calldata name, uint256 timestamp)
     external
     requireIsOperational()
     requireAppCaller()
@@ -435,23 +433,24 @@ contract FlightSuretyData {
      *      resulting in insurance payouts, the contract should be self-sustaining
      *
      */
-    function fund(address address_, uint256 amount) external payable
+    function fundAirline(address address_, uint256 amount) external payable
     requireIsOperational()
     requireAppCaller()
     requireRegisteredAirline(address_)
     returns (bool)
     {
-        require(amount > 0, "Did not send any funds.");
+        require(amount > 0, "Not enough funds");
 
+        // add amount to airline
         airlines[address_].amountFunded = airlines[address_].amountFunded.add(amount);
         totalFunds = totalFunds.add(amount);
-        emit AirlineSentFunds(address_, amount, airlines[address_].amountFunded);
+
+        emit AirlineGotFunds(address_, amount, airlines[address_].amountFunded);
         if (airlines[address_].amountFunded >= 10 ether) {
             airlines[address_].isFunded = true;
-            numFundedAirlines = numFundedAirlines.add(1);
+            numberOfFundedAirlines = numberOfFundedAirlines.add(1);
             emit AirlineFunded(address_, airlines[address_].name);
         }
-
         return airlines[address_].isFunded;
     }
 

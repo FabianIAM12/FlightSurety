@@ -6,7 +6,7 @@ module.exports = async (deployer) => {
 
     // hard-coded value, based on wallet seed
     // this is account #1 (#0 is deployer)
-    let firstAirline = '0x152f499FC0F79658a03f594529A2464CAc722D1D';
+    let firstAirline = '0x2bBBdA0d585DbA957661899f8C6c6863398dFec6';
     let firstAirlineName = 'Lufthansa';
 
     await deployer.deploy(FlightSuretyData, firstAirline, firstAirlineName);
@@ -22,7 +22,7 @@ module.exports = async (deployer) => {
 
     let config = {
         localhost: {
-            url: 'http://localhost:1234',
+            url: 'http://localhost:7545',
             dataAddress: data.address,
             appAddress: app.address,
             gas: block.gasLimit

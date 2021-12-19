@@ -102,7 +102,7 @@ contract FlightSuretyApp {
      */
     function fundAirline() public payable returns (bool)
     {
-        bool funded = dataContract.fund(msg.sender, msg.value);
+        bool funded = dataContract.fundAirline(msg.sender, msg.value);
         address(dataContract).transfer(msg.value);
 
         return funded;
@@ -129,7 +129,7 @@ contract FlightSuretyApp {
     }
 
     // called by a passenger
-    function buyInsurance(address airline, string memory flight, uint256 timestamp) public payable returns (bool)
+    function buyFlightInsurance(address airline, string memory flight, uint256 timestamp) public payable returns (bool)
     {
         // Require insurance amount, 0 to 1 ether.
         require(msg.value > 0, "Insurance amount not sent");
@@ -142,7 +142,7 @@ contract FlightSuretyApp {
             retvalue = msg.value.sub(1 ether);
         }
 
-        bool bought = dataContract.buyInsurance(msg.sender, value, airline, flight, timestamp);
+        bool bought = dataContract.buyFlightInsurance(msg.sender, value, airline, flight, timestamp);
         address(dataContract).transfer(value);
         if (retvalue > 0) {
             msg.sender.transfer(retvalue);
