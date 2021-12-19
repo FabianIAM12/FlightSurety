@@ -33,6 +33,7 @@ contract('Flight Surety Tests', async (accounts) => {
     /* Operations and Settings                                                              */
     /****************************************************************************************/
 
+    /*
     it(`(multiparty) has correct initial isOperational() value`, async function () {
         let status = await contract.flightSuretyData.isOperational.call();
         assert.equal(status, true, "Incorrect initial operating status value");
@@ -113,11 +114,13 @@ contract('Flight Surety Tests', async (accounts) => {
         let result = await contract.flightSuretyData.isAirline.call(newAirline, {from: contract.flightSuretyApp.address});
         assert.equal(result, false, "Airline should not be able to do this")
     });
+    */
 
     /* */
     /* founding airlines */
     /* */
 
+    /*
     it("airline is funded if it sends 10 or more ether", async () => {
         await contract.flightSuretyApp.fundAirline({from: contract.firstAirline, value: tenEther});
         let result = await contract.flightSuretyData.isAirlineFunded.call(contract.firstAirline, {from: contract.flightSuretyApp.address});
@@ -148,8 +151,13 @@ contract('Flight Surety Tests', async (accounts) => {
         }
 
         assert.equal(res.length, flightList.length, "Airline has the same much entries");
-    });
+    }); */
 
+    /* */
+    /* buy insurance */
+    /* */
+
+    /*
     // buy insurence without money
     it("should not be possible to buy without paying", async () => {
         const passenger = accounts[8];
@@ -167,28 +175,53 @@ contract('Flight Surety Tests', async (accounts) => {
     });
 
     // buy insurence with money
-    it("should be possible to buy insurence with enough ether", async () => {
+    it("buy insurance with too much ether", async () => {
+        const flight = flightList[0];
         const passenger = accounts[8];
-        const selectedFlight = flightList[0];
         let reverted = false;
 
         try {
-            await contract.flightSuretyApp.buyFlightInsurance(selectedFlight.address, selectedFlight.name, selectedFlight.timestamp,
-                {from: passenger, value: oneEther});
+            await contract.flightSuretyApp.buyFlightInsurance(flight.address, flight.name, flight.timestamp,
+                {from: passenger, value: twoEther });
         } catch (e) {
-            console.log(e)
             reverted = true;
         }
 
         assert.equal(reverted, false, "Should be not reverted");
     });
 
+    it("buy insurance for a flight", async () => {
+        let flight = flightList[0];
+        let passenger = accounts[6];
+
+        await contract.flightSuretyApp.buyFlightInsurance(flight.address, flight.name, flight.timestamp,
+            {from: passenger, value: oneEther});
+
+        let amount = await contract.flightSuretyApp.insuredAmount.call(flight.address, flight.name, flight.timestamp,
+            {from: passenger});
+
+        assert.equal(amount, oneEther, "Was insured for 1 ether");
+    });
+     */
+
+    /* */
+    /* oracles */
+    /* */   
+    it("should register oracles", async () => {
+        let oracles = 10;
+        let fee = await contract.flightSuretyApp.REGISTRATION_FEE.call();
+        let registered = true;
+
+        try {
+            for (let i = 0; i < oracles; i++) {
+                await contract.flightSuretyApp.registerOracle({from: accounts[i], value: fee});
+                let indexes = await contract.flightSuretyApp.getMyIndexes.call({from: accounts[i]});
+                console.log(`oracle ${i} indexes ${indexes}`);
+            }
+        }
+        catch (e) {
+            registered = false;
+        }
+        assert.equal(registered, true, "Unable to register all oracles");
+    });
 });
-
-const expectToRevert = (promise, errorMessage) => {
-    return truffleAssert.reverts(promise, errorMessage);
-};
-
-const expectToFail = (promise, errorMessage) => {
-    return truffleAssert.fails(promise, errorMessage);
-};
