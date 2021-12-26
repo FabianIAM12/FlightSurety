@@ -29,7 +29,6 @@ contract FlightSuretyApp {
     address private contractOwner;          // Account used to deploy contract
     FlightSuretyData private dataContract;  // Contract that holds all the data
 
-
     /********************************************************************************************/
     /*                                       FUNCTION MODIFIERS                                 */
     /********************************************************************************************/
@@ -45,7 +44,7 @@ contract FlightSuretyApp {
     modifier requireIsOperational()
     {
         // Modify to call data contract's status
-        require(true, "Contract is currently not operational");
+        require(true, "Contract is currently not working in operational mode");
         _;  // All modifiers require an "_" which indicates where the function body will be added
     }
 
@@ -54,10 +53,9 @@ contract FlightSuretyApp {
      */
     modifier requireContractOwner()
     {
-        require(msg.sender == contractOwner, "Caller is not contract owner");
+        require(msg.sender == contractOwner, "Caller is not the contract owner");
         _;
     }
-
 
     /********************************************************************************************/
     /*                                       CONSTRUCTOR                                        */
@@ -77,15 +75,15 @@ contract FlightSuretyApp {
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
 
-    function isOperational() public pure returns(bool)
+    function isOperational() public view returns(bool)
     {
-        return true;  // Modify to call data contract's status
+        // does this work?
+        return dataContract.isOperational();  // Modify to call data contract's status
     }
 
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
-
 
     /**
      * @dev Add an airline to the registration queue
@@ -102,10 +100,10 @@ contract FlightSuretyApp {
      */
     function fundAirline() public payable returns (bool)
     {
-        bool funded = dataContract.fundAirline(msg.sender, msg.value);
+        bool isFunded = dataContract.fundAirline(msg.sender, msg.value);
         address(dataContract).transfer(msg.value);
 
-        return funded;
+        return isFunded;
     }
 
     function hasVoted(address airline) public view returns (bool)
@@ -113,9 +111,9 @@ contract FlightSuretyApp {
         return dataContract.hasVoted(msg.sender, airline);
     }
 
-    function numVotes(address airline) public view returns (uint256)
+    function numberOfVotes(address airline) public view returns (uint256)
     {
-        return dataContract.numVotes(airline);
+        return dataContract.numberOfVotes(airline);
     }
 
     function isRegistered(address airline) public view returns (bool, uint256)
@@ -128,36 +126,34 @@ contract FlightSuretyApp {
         return dataContract.isAirlineFunded(airline);
     }
 
-    // called by a passenger
     function buyFlightInsurance(address airline, string memory flight, uint256 timestamp) public payable returns (bool)
     {
-        // Require insurance amount, 0 to 1 ether.
+        // Insurance amount, 0 to 1 ether.
         require(msg.value > 0, "Insurance amount not sent");
 
-        // is it more than it should be?
         uint value = msg.value;
-        uint retvalue = 0;
+        uint returnValue = 0;
         if (value > 1 ether) {
             value = 1 ether;
-            retvalue = msg.value.sub(1 ether);
+            returnValue = msg.value.sub(1 ether);
         }
 
         bool bought = dataContract.buyFlightInsurance(msg.sender, value, airline, flight, timestamp);
         address(dataContract).transfer(value);
-        if (retvalue > 0) {
-            msg.sender.transfer(retvalue);
+        if (returnValue > 0) {
+            msg.sender.transfer(returnValue);
         }
 
         return bought;
     }
 
-    // how much did i pay for insurance?
+    // how much was payed for insurance?
     function insuredAmount(address airline, string memory flight, uint256 timestamp) public view returns (uint)
     {
         return dataContract.insuredAmount(msg.sender, airline, flight, timestamp);
     }
 
-    // send me what i'm owed
+    // pay passengers accordingly
     function payPassenger() public
     {
         return dataContract.pay(msg.sender);
@@ -175,7 +171,6 @@ contract FlightSuretyApp {
 
     /**
      * @dev Called after oracle has updated flight status
-     *
      */
     function processFlightStatus(address airline, string memory flight, uint256 timestamp, uint8 statusCode)
     internal
@@ -186,16 +181,14 @@ contract FlightSuretyApp {
         }
     }
 
-    // Generate a request for oracles to fetch flight information
+    // Request for oracles to fetch flight information
     function fetchFlightStatus(address airline, string calldata flight, uint256 timestamp)
     external
     {
         uint8 index = getRandomIndex(msg.sender);
-
         // Generate a unique key for storing the request
         bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp));
         oracleResponses[key] = ResponseInfo({requester: msg.sender, isOpen: true});
-
         emit OracleRequest(index, airline, flight, timestamp);
     }
 
@@ -292,8 +285,7 @@ contract FlightSuretyApp {
 
             emit FlightStatusInfo(airline, flight, timestamp, statusCode);
 
-            // comment out this line to allow passengers to continue querying
-            // oracles.
+            // Allow passengers to continue querying
             oracleResponses[key].isOpen = false;
 
             // Handle flight status as appropriate
@@ -331,8 +323,7 @@ contract FlightSuretyApp {
         uint8 maxValue = 10;
 
         // Pseudo random number...the incrementing nonce adds variation
-        uint8 random = uint8(uint256(keccak256(abi.encodePacked(blockhash(block.number - nonce++),
-            account))) % maxValue);
+        uint8 random = uint8(uint256(keccak256(abi.encodePacked(blockhash(block.number - nonce++), account))) % maxValue);
 
         if (nonce > 250) {
             nonce = 0;  // Can only fetch blockhashes for last 256 blocks so we adapt
@@ -346,7 +337,6 @@ contract FlightSuretyApp {
     /**
      * @dev Fallback function.
      * Just forward any funds to the data contract.
-     *
      */
     function() external payable
     {

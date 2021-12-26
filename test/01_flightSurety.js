@@ -9,6 +9,15 @@ contract('Flight Surety Tests', async (accounts) => {
     const tenEther = web3.utils.toWei('10', 'ether');
     const twelveEther = web3.utils.toWei('12', 'ether');
 
+    const TEST_COUNT = 5;
+
+    const STATUS_CODE_UNKNOWN = 0;
+    const STATUS_CODE_ON_TIME = 10;
+    const STATUS_CODE_LATE_AIRLINE = 20;
+    const STATUS_CODE_LATE_WEATHER = 30;
+    const STATUS_CODE_LATE_TECHNICAL = 40;
+    const STATUS_CODE_LATE_OTHER = 50;
+
     const flightList = [{"name": "Flight 123",
         "isRegistered": true,
         "statusCode": 0,
@@ -33,7 +42,6 @@ contract('Flight Surety Tests', async (accounts) => {
     /* Operations and Settings                                                              */
     /****************************************************************************************/
 
-    /*
     it(`(multiparty) has correct initial isOperational() value`, async function () {
         let status = await contract.flightSuretyData.isOperational.call();
         assert.equal(status, true, "Incorrect initial operating status value");
@@ -114,13 +122,11 @@ contract('Flight Surety Tests', async (accounts) => {
         let result = await contract.flightSuretyData.isAirline.call(newAirline, {from: contract.flightSuretyApp.address});
         assert.equal(result, false, "Airline should not be able to do this")
     });
-    */
 
     /* */
     /* founding airlines */
     /* */
 
-    /*
     it("airline is funded if it sends 10 or more ether", async () => {
         await contract.flightSuretyApp.fundAirline({from: contract.firstAirline, value: tenEther});
         let result = await contract.flightSuretyData.isAirlineFunded.call(contract.firstAirline, {from: contract.flightSuretyApp.address});
@@ -151,13 +157,12 @@ contract('Flight Surety Tests', async (accounts) => {
         }
 
         assert.equal(res.length, flightList.length, "Airline has the same much entries");
-    }); */
+    });
 
     /* */
     /* buy insurance */
     /* */
 
-    /*
     // buy insurence without money
     it("should not be possible to buy without paying", async () => {
         const passenger = accounts[8];
@@ -202,18 +207,16 @@ contract('Flight Surety Tests', async (accounts) => {
 
         assert.equal(amount, oneEther, "Was insured for 1 ether");
     });
-     */
 
     /* */
     /* oracles */
-    /* */   
-    it("should register oracles", async () => {
-        let oracles = 10;
+    /* */
+    it("should register multiple oracles", async () => {
         let fee = await contract.flightSuretyApp.REGISTRATION_FEE.call();
         let registered = true;
 
         try {
-            for (let i = 0; i < oracles; i++) {
+            for (let i = 0; i < TEST_COUNT; i++) {
                 await contract.flightSuretyApp.registerOracle({from: accounts[i], value: fee});
                 let indexes = await contract.flightSuretyApp.getMyIndexes.call({from: accounts[i]});
                 console.log(`oracle ${i} indexes ${indexes}`);
@@ -223,5 +226,39 @@ contract('Flight Surety Tests', async (accounts) => {
             registered = false;
         }
         assert.equal(registered, true, "Unable to register all oracles");
+    });
+
+    it('can request flight status', async () => {
+        // ARRANGE
+        let flight = 'ND1322'; // Course number
+        let timestamp = Math.floor(Date.now() / 1000);
+
+        // Submit a request for oracles to get status information for a flight
+        await contract.flightSuretyApp.fetchFlightStatus(contract.firstAirline, flight, timestamp);
+
+        // Since the Index assigned to each test account is opaque by design
+        // loop through all the accounts and for each account, all its Indexes (indices?)
+        // and submit a response. The contract will reject a submission if it was
+        // not requested so while sub-optimal, it's a good test of that feature
+        for(let i = 1; i < TEST_COUNT; i++) {
+            // Get oracle information
+            let oracleIndexes = await contract.flightSuretyApp.getMyIndexes.call({ from: accounts[i]});
+            for (let idx = 0; idx < 3; idx++) {
+
+                try {
+                    // Submit a response...it will only be accepted if there is an Index match
+                    await contract.flightSuretyApp.submitOracleResponse(oracleIndexes[idx],
+                        contract.firstAirline,
+                        flight,
+                        timestamp,
+                        STATUS_CODE_ON_TIME,
+                        { from: accounts[i] });
+                }
+                catch(e) {
+                    // Enable this when debugging
+                    console.log('\nError', idx, oracleIndexes[idx].toNumber(), flight, timestamp);
+                }
+            }
+        }
     });
 });
