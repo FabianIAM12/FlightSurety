@@ -1,36 +1,63 @@
-<h1>Airline</h1>
-<h2>Register or vote new airline</h2>
+<h1>Airlines</h1>
+
+<!--
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef> Name </th>
+    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="address">
+    <th mat-header-cell *matHeaderCellDef> Address </th>
+    <td mat-cell *matCellDef="let element"> {{element.address}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="fund">
+    <th mat-header-cell *matHeaderCellDef> Fund </th>
+    <td mat-cell *matCellDef="let element"> {{element.fund}} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+<br> -->
+
+<h2>Register airline</h2>
 <h3>Airline Address</h3>
 <mat-form-field appearance="fill">
-  <mat-label>Input</mat-label>
+  <mat-label>0xAB8eFD0023b722a045F6Be920CeA7Cd8d8CD6261</mat-label>
   <input matInput [(ngModel)]="airlineAddress">
 </mat-form-field>
 <h3>Airline Name</h3>
 <mat-form-field appearance="fill">
-  <mat-label>Input</mat-label>
+  <mat-label>Airline Name</mat-label>
   <input matInput [(ngModel)]="airlineName">
 </mat-form-field>
-<h3>Found Airline</h3>
+<br>
+<button mat-button style="background: lightgrey" (click)="registerAirline()">Register</button>
+<br>
+<hr>
+<h2>Fund Airline</h2>
 <mat-form-field appearance="fill">
-  <mat-label>Input</mat-label>
-  <input matInput [(ngModel)]="airlineName">
+  <mat-label>Integer Amount</mat-label>
+  <input matInput [(ngModel)]="amount">
 </mat-form-field>
-
-<h2>REGISTER AIRLINE</h2>
-
-<button mat-button style="background: lightgrey" (click)="registerAirline()">Register / found Airline</button>
-<button mat-button style="background: lightgrey" (click)="foundAirline()">Vote Airline</button>
+<br>
+<button mat-button style="background: lightgrey" (click)="foundAirline()">Found Airline</button>
+<br>
+<!-- <button mat-button style="background: lightgrey" (click)="foundAirline()">Vote Airline</button> -->
 <hr>
 <h2>Register new flight</h2>
 <h3>Flight number</h3>
 <mat-form-field appearance="fill">
-  <mat-label>Input</mat-label>
-  <input matInput>
+  <mat-label>AB6303</mat-label>
+  <input matInput [(ngModel)]="flightNumber">
 </mat-form-field>
 <h3>Flight time</h3>
 <mat-form-field appearance="fill">
-  <mat-label>Input</mat-label>
-  <input matInput>
+  <mat-label>1363211600</mat-label>
+  <input matInput [(ngModel)]="timestamp">
 </mat-form-field>
-
-<button mat-button style="background: lightgrey">Primary3</button>
+<br>
+<button mat-button style="background: lightgrey" (click)="registerNewFlight()">Register flight</button>
+<br>

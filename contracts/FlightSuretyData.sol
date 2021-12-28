@@ -1,4 +1,5 @@
 pragma solidity ^0.5.11;
+pragma experimental ABIEncoderV2;
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
@@ -33,7 +34,8 @@ contract FlightSuretyData {
     mapping(address => bool) private appContracts;  // Only authorized app contracts can call this contract.
 
     // airlines
-    mapping(address => Airline) private airlines;   // registered airlines
+    mapping(address => Airline) public airlines;   // registered airlines
+    mapping(uint => Airline) public airlines2;   // registered airlines
     mapping(address => uint256) private votes;      // airlines in the queue and their votes
     mapping(address => address[]) private voters;   // list of voters for an airline
     uint256 public numberOfAirlines;                // number of airlines, registered or unregistered
@@ -296,11 +298,7 @@ contract FlightSuretyData {
     }
 
     function registerFlight(address airline_, string calldata name_, uint256 timestamp)
-    external
-    requireIsOperational()
-    requireAppCaller()
-    requireFundedAirline(airline_)
-    returns (bytes32)
+    external requireIsOperational() requireAppCaller() requireFundedAirline(airline_) returns (bytes32)
     {
         bytes32 key = getFlightKey(airline_, name_, timestamp);
         // already registered and has no flight data
@@ -342,11 +340,7 @@ contract FlightSuretyData {
     }
 
     function insuredAmount(address passenger, address airline, string calldata name, uint256 timestamp)
-    external
-    view
-    requireIsOperational()
-    requireAppCaller()
-    returns (uint)
+    external view requireIsOperational() requireAppCaller() returns (uint)
     {
         bytes32 key = getFlightKey(airline, name, timestamp);
         bytes32 insuranceKey = getFlightInsuranceKey(passenger, key);
@@ -362,8 +356,7 @@ contract FlightSuretyData {
         flights[key].statusCode = statusCode;
     }
 
-    function getFlightStatus(address airline, string calldata flight, uint256 timestamp)
-    external view returns (uint8)
+    function getFlightStatus(address airline, string calldata flight, uint256 timestamp) external view returns (uint8)
     {
         bytes32 key = getFlightKey(airline, flight, timestamp);
         return flights[key].statusCode;
@@ -413,7 +406,6 @@ contract FlightSuretyData {
     /**
      * @dev Initial funding for the insurance. Unless there are too many delayed flights
      *      resulting in insurance payouts, the contract should be self-sustaining
-     *
      */
     function fundAirline(address address_, uint256 amount) external payable
     requireIsOperational()
@@ -434,6 +426,17 @@ contract FlightSuretyData {
         return airlines[address_].isFunded;
     }
 
+    // todo: get it into frontend
+    function getAirlines() external payable requireIsOperational() requireAppCaller() returns(Airline[] memory)
+    {
+        Airline[] memory airlinesList = new Airline[](numberOfAirlines);
+        for (uint i = 0; i < numberOfAirlines; i++) {
+            Airline storage al = airlines2[i];
+            airlines2[i] = al;
+        }
+        return airlinesList;
+    }
+
     function getFlightKey(address airline, string memory flight, uint256 timestamp) internal pure returns(bytes32)
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
@@ -447,8 +450,7 @@ contract FlightSuretyData {
     /**
      * @dev Add an app contract that can call into this contract
      */
-
-    function authorizeCaller(address app) external requireContractOwner
+    function authorizeCallerContract(address app) external requireContractOwner
     {
         appContracts[app] = true;
     }
@@ -456,16 +458,14 @@ contract FlightSuretyData {
     /**
      * @dev Add an app contract that can call into this contract
      */
-    function deauthorizeCaller(address app) external requireContractOwner
+    function deAuthorizeCallerContract(address app) external requireContractOwner
     {
         delete appContracts[app];
     }
 
     /**
      * @dev Fallback function for funding smart contract.
-     *
      */
     function() external payable
-    {
-    }
+    { }
 }

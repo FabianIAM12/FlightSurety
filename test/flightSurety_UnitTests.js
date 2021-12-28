@@ -18,24 +18,25 @@ contract('Flight Surety Tests', async (accounts) => {
     const STATUS_CODE_LATE_TECHNICAL = 40;
     const STATUS_CODE_LATE_OTHER = 50;
 
-    const flightList = [{"name": "Flight 123",
+    const flightList = [
+        {"name": "Flight 123",
         "isRegistered": true,
         "statusCode": 0,
-        "timestamp": 1366381600,
+        "timestamp": 1363211600,
         "address": accounts[2],
         "from": "YAD", "to": "MUC"},
         {"name": "Flight 678",
-            "isRegistered": true,
-            "statusCode": 0,
-            "timestamp": 1266385200,
-            "address": accounts[3],
-            "from": "CAI", "to": "321"
+         "isRegistered": true,
+         "statusCode": 0,
+         "timestamp": 1116385200,
+         "address": accounts[3],
+         "from": "CAI", "to": "MUC"
         }];
 
     var contract;
     before('setup contract', async () => {
         contract = await Test.Config(accounts);
-        await contract.flightSuretyData.authorizeCaller(contract.flightSuretyApp.address);
+        await contract.flightSuretyData.authorizeCallerContract(contract.flightSuretyApp.address);
     });
 
     /****************************************************************************************/
@@ -156,7 +157,7 @@ contract('Flight Surety Tests', async (accounts) => {
             res.push(result);
         }
 
-        assert.equal(res.length, flightList.length, "Airline has the same much entries");
+        assert.equal(res.length, flightList.length, "Was not able to create");
     });
 
     /* */

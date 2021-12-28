@@ -24,6 +24,7 @@
     "@ng-bootstrap/ng-bootstrap": "^11.0.0-beta.1",
     "assert": "^2.0.0",
     "bootstrap": "^4.5.0",
+    "bootstrap-icons": "^1.7.2",
     "browser": "^0.2.6",
     "crypto-browserify": "^3.12.0",
     "https-browserify": "^1.0.0",

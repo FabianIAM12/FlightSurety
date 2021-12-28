@@ -22,7 +22,7 @@ export class AdministrationComponent implements AfterViewInit {
   }
 
   sendAuthorize(): any {
-    return this.contractConnectionService.authorizeCaller(this.authorizeAddress);
+    return this.contractConnectionService.authorizeCallerContract(this.authorizeAddress);
   }
 
   ngAfterViewInit(): void {

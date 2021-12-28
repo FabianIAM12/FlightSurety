@@ -36,11 +36,6 @@ contract FlightSuretyApp {
     // Modifiers help avoid duplication of code. They are typically used to validate something
     // before a function is allowed to be executed.
 
-    /**
-     * @dev Modifier that requires the "operational" boolean variable to be "true"
-     *      This is used on all state changing functions to pause the contract in
-     *      the event there is an issue that needs to be fixed
-     */
     modifier requireIsOperational()
     {
         // Modify to call data contract's status
@@ -75,6 +70,11 @@ contract FlightSuretyApp {
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
 
+    /**
+     * @dev Modifier that requires the "operational" boolean variable to be "true"
+     *      This is used on all state changing functions to pause the contract in
+     *      the event there is an issue that needs to be fixed
+     */
     function isOperational() public view returns(bool)
     {
         // does this work?
@@ -102,7 +102,6 @@ contract FlightSuretyApp {
     {
         bool isFunded = dataContract.fundAirline(msg.sender, msg.value);
         address(dataContract).transfer(msg.value);
-
         return isFunded;
     }
 
@@ -246,18 +245,14 @@ contract FlightSuretyApp {
     {
         // Require registration fee
         require(msg.value >= REGISTRATION_FEE, "Registration fee is required");
-
         uint8[3] memory indexes = generateIndexes(msg.sender);
-
         oracles[msg.sender] = Oracle({isRegistered: true, indexes: indexes});
-
         address(dataContract).transfer(msg.value);
     }
 
     function getMyIndexes() external view returns(uint8[3] memory)
     {
         require(oracles[msg.sender].isRegistered, "Not registered as an oracle");
-
         return oracles[msg.sender].indexes;
     }
 
@@ -268,10 +263,8 @@ contract FlightSuretyApp {
     function submitOracleResponse(uint8 index, address airline, string calldata flight,
         uint256 timestamp, uint8 statusCode) external
     {
-        require((oracles[msg.sender].indexes[0] == index) ||
-        (oracles[msg.sender].indexes[1] == index) ||
-            (oracles[msg.sender].indexes[2] == index),
-            "Index does not match oracle request");
+        require((oracles[msg.sender].indexes[0] == index) || (oracles[msg.sender].indexes[1] == index) ||
+            (oracles[msg.sender].indexes[2] == index), "Index does not match oracle request");
 
         bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp));
         require(oracleResponses[key].isOpen, "Flight or timestamp do not match oracle request");

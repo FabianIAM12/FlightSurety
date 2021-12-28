@@ -10,7 +10,7 @@
   "scripts": {
     "test": "truffle test test/flightSuretyData.js",
     "dapp-old": "webpack-dev-server --mode development --config webpack.config.dapp.js",
-    "dapp": "cd src/dapp2 && ng serve",
+    "dapp": "cd src/dapp2 && ng serve --port 8000",
     "dapp:prod": "webpack --mode production  --config webpack.config.dapp.js",
     "server": "rm -rf ./build/server && webpack --config webpack.config.server.js"
   },
@@ -47,6 +47,8 @@
     "webpack-node-externals": "1.7.2"
   },
   "dependencies": {
+    "random": "^3.0.6",
+    "regenerator-runtime": "^0.13.9",
     "solc": "^0.5.11"
   }
 }

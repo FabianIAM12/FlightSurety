@@ -1,19 +1,37 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {ContractConnectionService} from "../../services/contract-connection.service";
+
+export interface FlightElement {
+  name: string;
+  address: string;
+  fund: number;
+}
+
+const ELEMENT_DATA: FlightElement[] = [
+  { name: '1.0079', address: 'Hydrogen', fund: 4 },
+];
 
 @Component({
   selector: 'app-airline',
   templateUrl: './airline.component.html',
   styleUrls: ['./airline.component.scss']
 })
-export class AirlineComponent implements OnInit {
+export class AirlineComponent implements AfterViewInit {
+  displayedColumns: string[] = ['name', 'address', 'fund'];
+  dataSource = ELEMENT_DATA;
+
   airlineAddress: string = '';
   airlineName: string = '';
-  found = 0;
+  amount = 0;
+  timestamp: string = '';
+  flightNumber: string = '';
 
   constructor(private contractConnectionService: ContractConnectionService) { }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
+    setTimeout( () => {
+      const test = this.contractConnectionService.getAirlines();
+    }, 250);
   }
 
   registerAirline(): void {
@@ -21,7 +39,10 @@ export class AirlineComponent implements OnInit {
   }
 
   foundAirline(): void {
-    console.log(this.airlineAddress);
-    console.log(this.airlineName);
+    this.contractConnectionService.fundAirline(this.amount);
+  }
+
+  registerNewFlight(): void {
+    this.contractConnectionService.registerNewFlight(this.flightNumber, this.timestamp);
   }
 }

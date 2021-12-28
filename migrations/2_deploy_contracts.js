@@ -3,10 +3,8 @@ const FlightSuretyData = artifacts.require("FlightSuretyData");
 const fs = require('fs');
 
 module.exports = async (deployer) => {
-
-    // hard-coded value, based on wallet seed
     // this is account #1 (#0 is deployer)
-    let firstAirline = '0x2bBBdA0d585DbA957661899f8C6c6863398dFec6';
+    let firstAirline = '0xD5668ff8F82Db63481ECaA0cfCB6F400Cdc27859';
     let firstAirlineName = 'Lufthansa';
 
     await deployer.deploy(FlightSuretyData, firstAirline, firstAirlineName);
@@ -15,7 +13,7 @@ module.exports = async (deployer) => {
     await deployer.deploy(FlightSuretyApp, data.address);
     let app = await FlightSuretyApp.deployed();
 
-    await data.authorizeCaller(app.address);
+    await data.authorizeCallerContract(app.address);
 
     // get the gas limit
     let block = await web3.eth.getBlock("latest");

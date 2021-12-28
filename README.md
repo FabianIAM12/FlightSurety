@@ -23,19 +23,11 @@ To use the dapp:
 `truffle migrate`
 `npm run dapp`
 
+Hint: Don't forget to install packages of angular app
+
 To view dapp:
 
 `http://localhost:8000`
-
-To use the angular dapp:
-
-`truffle migrate`
-change to folder
-`ng serve`
-
-To view dapp2:
-
-`http://localhost:4200`
 
 ## Develop Server
 
