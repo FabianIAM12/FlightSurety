@@ -180,9 +180,7 @@ contract FlightSuretyData {
     }
 
     function numberOfVotes(address airline) public view requireAppCaller() returns (uint256)
-    {
-        return votes[airline];
-    }
+    { return votes[airline]; }
 
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
@@ -361,13 +359,10 @@ contract FlightSuretyData {
     }
 
     /**
-     *  @dev Transfers eligible payout funds to insuree
+     *  @dev Transfers payout funds to insuree
      *
      */
-    function pay(address payable passenger)
-    external
-    requireIsOperational()
-    requireAppCaller()
+    function pay(address payable passenger) external requireIsOperational() requireAppCaller()
     {
         uint payment = payouts[passenger];
         if (payment > 0) {
