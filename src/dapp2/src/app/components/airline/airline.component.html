@@ -34,7 +34,7 @@
   <input matInput [(ngModel)]="airlineName">
 </mat-form-field>
 <br>
-<button mat-button style="background: lightgrey" (click)="registerAirline()">Register</button>
+<button mat-button style="background: lightgrey" (click)="registerAirline()">Register & vote Airline</button>
 <br>
 <hr>
 <h2>Fund Airline</h2>
@@ -43,12 +43,17 @@
   <input matInput [(ngModel)]="amount">
 </mat-form-field>
 <br>
-<button mat-button style="background: lightgrey" (click)="foundAirline()">Found Airline</button>
+<mat-form-field appearance="fill">
+  <mat-label>Airline Account</mat-label>
+  <input matInput [(ngModel)]="airlineAccount">
+</mat-form-field>
+<br>
+<button mat-button style="background: lightgrey" (click)="fundAirline()">Found Airline</button>
 <br>
 <!-- <button mat-button style="background: lightgrey" (click)="foundAirline()">Vote Airline</button> -->
 <hr>
 <h2>Register new flight</h2>
-<h3>Flight number</h3>
+<h3>Flight name (number)<h3>
 <mat-form-field appearance="fill">
   <mat-label>AB6303</mat-label>
   <input matInput [(ngModel)]="flightNumber">
@@ -57,6 +62,11 @@
 <mat-form-field appearance="fill">
   <mat-label>1363211600</mat-label>
   <input matInput [(ngModel)]="timestamp">
+</mat-form-field>
+<h3>Airline</h3>
+<mat-form-field appearance="fill">
+  <mat-label>0xD5668ff8F82Db63481ECaA0cfCB6F400Cdc27859</mat-label>
+  <input matInput [(ngModel)]="airlineFlightAccount">
 </mat-form-field>
 <br>
 <button mat-button style="background: lightgrey" (click)="registerNewFlight()">Register flight</button>

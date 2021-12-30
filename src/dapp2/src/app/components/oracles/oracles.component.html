@@ -1,15 +1,21 @@
 <h1>Oracles</h1>
 
-<!--
 <mat-form-field appearance="fill">
   <mat-label>Select flight</mat-label>
   <mat-select (selectionChange)="selectChange($event)">
-    <mat-option *ngFor="let flight of flights" [value]="flight.address">
+    <mat-option *ngFor="let flight of flights" [value]="flight.name">
       {{ flight.name }}
     </mat-option>
   </mat-select>
 </mat-form-field>
+<br>
+<button mat-button style="background: lightgrey" (click)="fetchFlightStatus()">Fetch Flight Status</button>
+<br><br>
+<button mat-button style="background: lightgrey" (click)="withdraw()">Withdraw Cash</button>
+<br><br>
+<button mat-button style="background: lightgrey" (click)="testAPI()">Test API</button>
 
+<!--
 <h3>Airline address</h3>
 <div *ngIf="selectedFlight">
   <mat-form-field appearance="fill">

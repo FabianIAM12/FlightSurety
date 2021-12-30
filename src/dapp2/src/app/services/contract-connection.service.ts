@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import Web3 from "web3";
 const FlightSuretyApp = require('../../../../../build/contracts/FlightSuretyApp.json');
 const FlightSuretyData = require('../../../../../build/contracts/FlightSuretyData.json');
@@ -17,7 +17,7 @@ export interface Flight {
 @Injectable({
   providedIn: 'root'
 })
-export class ContractConnectionService {
+export class ContractConnectionService implements OnInit {
   private readonly network = 'localhost';
   private web3: Web3;
   private flightSuretyApp: any;
@@ -26,84 +26,102 @@ export class ContractConnectionService {
 
   private readonly airlines: any;
   private passengers: any;
-  private config: any;
+  public config: any;
 
   // todo: refactor for single file
   flights: Flight[] = [
     {"name": "Flight 1",
       "isRegistered": true,
       "statusCode": 0,
-      "address": '0xFa518198f877Cec509105e4317332D8e2d860213',
+      "address": '0xD5668ff8F82Db63481ECaA0cfCB6F400Cdc27859',
       "timestamp": 1363211600,
       "from": "YAD", "to": "MUC"},
     {"name": "Flight 2",
       "isRegistered": true,
       "statusCode": 0,
-      "address": '0x59cD61C7046Ab97382f8246b4728be9819670692',
+      "address": '0xD5668ff8F82Db63481ECaA0cfCB6F400Cdc27859',
       "timestamp": 1222711600,
       "from": "CDG", "to": "MU2"
     },
     {"name": "Flight 3",
       "isRegistered": true,
       "statusCode": 0,
-      "address": '0xA81e8A03d583298510653EdCC378B1506cC483CD',
+      "address": '0xD5668ff8F82Db63481ECaA0cfCB6F400Cdc27859',
       "timestamp": 1222711600,
       "from": "LKI", "to": "TGV"
     },
     {"name": "Flight 4",
       "isRegistered": true,
       "statusCode": 0,
-      "address": '0xB545961776b8A3b736F80c4767067ccD731825dF',
+      "address": '0xFa518198f877Cec509105e4317332D8e2d860213',
       "timestamp": 1222711600,
       "from": "MAL", "to": "IBZ"
     },
     {"name": "Flight 5",
       "isRegistered": true,
       "statusCode": 0,
-      "address": '0x8Ed7D20E1Ce424246b12CD3b8637211100d332C2',
+      "address": '0xFa518198f877Cec509105e4317332D8e2d860213',
       "timestamp": 1222711600,
       "from": "BLA", "to": "IOP"
     },
     {"name": "Flight 6",
       "isRegistered": true,
       "statusCode": 0,
-      "address": '0xf2ADd7E02ca1a12b203654BAc5FE12B8D9Df8B0D',
+      "address": '0xFa518198f877Cec509105e4317332D8e2d860213',
       "timestamp": 1222711600,
       "from": "TST", "to": "ABC"
     },
     {"name": "Flight 7",
       "isRegistered": true,
       "statusCode": 0,
-      "address": '0x645572DEF45E740bE6618b7fb9255c81358b178D',
+      "address": '0x59cD61C7046Ab97382f8246b4728be9819670692',
       "timestamp": 1222711600,
       "from": "PAR", "to": "MUC"
     },
     {"name": "Flight 8",
       "isRegistered": true,
       "statusCode": 0,
-      "address": '0xef33F5E21652A75ef51eC33943D3Ed88E3a3fF48',
+      "address": '0x59cD61C7046Ab97382f8246b4728be9819670692',
       "timestamp": 1222711600,
       "from": "TT4", "to": "MUC"
     },
     {"name": "Flight 9",
       "isRegistered": true,
       "statusCode": 0,
-      "address": '0xCE6450EC106efb791841C70A228E82212AD93743',
+      "address": '0x59cD61C7046Ab97382f8246b4728be9819670692',
       "timestamp": 1222711600,
       "from": "CAI", "to": "MOS"
     }
   ];
 
   constructor() {
-    let config = Config[this.network];
-    this.web3 = new Web3(new Web3.providers.HttpProvider(config.url));
-    this.flightSuretyApp = new this.web3.eth.Contract(FlightSuretyApp.abi, config.appAddress);
-    this.flightSuretyData = new this.web3.eth.Contract(FlightSuretyData.abi, config.dataAddress);
+    this.config = Config[this.network];
+    this.web3 = new Web3(new Web3.providers.HttpProvider(this.config.url));
+    this.flightSuretyApp = new this.web3.eth.Contract(FlightSuretyApp.abi, this.config.appAddress);
+    this.flightSuretyData = new this.web3.eth.Contract(FlightSuretyData.abi, this.config.dataAddress);
 
     this.owner = null;
     this.airlines = [];
     this.passengers = [];
     this.setAccounts();
+  }
+
+  public getConfig() {
+    return this.config;
+  }
+
+  public ngOnInit() {
+    this.flightSuretyData.events.AirlineFunded({fromBlock: 0}, (err: any, event: { returnValues: any; }) => {
+      if (err) { console.log(err); }
+      let result = event.returnValues;
+      console.log(`AirlineFounded ${result}`);
+    });
+
+    this.flightSuretyData.events.InsuranceBought({fromBlock: 0}, (err: any, event: { returnValues: any; }) => {
+      if (err) { console.log(err); }
+      let result = event.returnValues;
+      console.log(`InsuranceBought ${result.passenger} ${result.name} ${result.key} ${result.amount}`);
+    });
   }
 
   public async getAirlines(): Promise<any> {
@@ -148,24 +166,28 @@ export class ContractConnectionService {
   }
 
   public fetchFlightStatus(flight: any) {
-    let payload = {
-      airline: this.airlines[0],
-      flight: flight,
-      timestamp: Math.floor(Date.now() / 1000)
-    }
+    console.log(flight.name);
+    return this.flightSuretyApp.methods.fetchFlightStatus(flight.address, flight.name, flight.timestamp)
+      .send({from: this.owner})
+      .then((res: any) => {
 
-    /*
-    this.flightSuretyApp.methods
-      .fetchFlightStatus(payload.airline, payload.flight, payload.timestamp)
-      .send({ from: this.owner}, (error: any, result: any) => {
-        console.log(error, result);
+        if (res.events) {
+          const { OracleRequest } = res.events;
+          console.log(OracleRequest.returnValues);
+        }
+      }).catch((err: any) => {
+        console.error(err);
       });
-    */
   }
 
-  public buyInsurance(airlineAddress: string, flightName: string, flightTimestamp: number, insuranceAmount: number) {
+  public buyInsurance(airlineAddress: string,
+                      flightName: string,
+                      flightTimestamp: number,
+                      insuranceAmount: number,
+                      passengerAccount: string) {
+
     this.flightSuretyApp.methods.buyFlightInsurance(airlineAddress, flightName, flightTimestamp)
-      .send({from: this.owner, value: this.web3.utils.toWei(insuranceAmount.toString(), 'ether')})
+      .send({from: passengerAccount, gas: this.config.gas, value: this.web3.utils.toWei(insuranceAmount.toString(), 'ether')})
       .then((res: any) => {
         console.log(res);
       }).catch((err: any) => {
@@ -203,9 +225,9 @@ export class ContractConnectionService {
     });
   }
 
-  public fundAirline(amount: number) {
+  public fundAirline(amount: number, airlineAccount: string) {
     this.flightSuretyApp.methods.fundAirline()
-      .send({from: this.owner, value: this.web3.utils.toWei(amount.toString(), 'ether')})
+      .send({from: airlineAccount, value: this.web3.utils.toWei(amount.toString(), 'ether')})
       .then((res: any) => {
         console.log(res);
       }).catch((err: any) => {
@@ -213,9 +235,19 @@ export class ContractConnectionService {
     });
   }
 
-  public registerNewFlight(flightNumber: string, timestamp: string) {
+  public registerNewFlight(flightNumber: string, timestamp: string, airlineFlightAccount: string) {
     this.flightSuretyApp.methods.registerFlight(flightNumber, timestamp)
-      .send({from: this.owner})
+      .send({from: airlineFlightAccount, gas: this.config.gas})
+      .then((res: any) => {
+        console.log(res);
+      }).catch((err: any) => {
+        console.error(err);
+    });
+  }
+
+  public creditInsurees(flight: any) {
+    this.flightSuretyApp.methods.creditInsurees(flight.address, flight.name, flight.timestamp, 20)
+      .send({from: this.owner, gas: this.config.gas})
       .then((res: any) => {
         console.log(res);
       }).catch((err: any) => {

@@ -217,7 +217,7 @@ contract('Flight Surety Tests', async (accounts) => {
         let registered = true;
 
         try {
-            for (let i = 0; i < TEST_COUNT; i++) {
+            for (let i = 1; i < TEST_COUNT; i++) {
                 await contract.flightSuretyApp.registerOracle({from: accounts[i], value: fee});
                 let indexes = await contract.flightSuretyApp.getMyIndexes.call({from: accounts[i]});
                 console.log(`oracle ${i} indexes ${indexes}`);
@@ -230,25 +230,23 @@ contract('Flight Surety Tests', async (accounts) => {
     });
 
     it('can request flight status', async () => {
-        // ARRANGE
-        let flight = 'ND1322'; // Course number
+        let flight = 'ND1322';
         let timestamp = Math.floor(Date.now() / 1000);
 
         // Submit a request for oracles to get status information for a flight
         await contract.flightSuretyApp.fetchFlightStatus(contract.firstAirline, flight, timestamp);
 
         // Since the Index assigned to each test account is opaque by design
-        // loop through all the accounts and for each account, all its Indexes (indices?)
+        // loop through all the accounts and for each account, all its Indexes
         // and submit a response. The contract will reject a submission if it was
         // not requested so while sub-optimal, it's a good test of that feature
         for(let i = 1; i < TEST_COUNT; i++) {
             // Get oracle information
             let oracleIndexes = await contract.flightSuretyApp.getMyIndexes.call({ from: accounts[i]});
-            for (let idx = 0; idx < 3; idx++) {
-
+            for (let i = 0; i < 3; i++) {
                 try {
                     // Submit a response...it will only be accepted if there is an Index match
-                    await contract.flightSuretyApp.submitOracleResponse(oracleIndexes[idx],
+                    await contract.flightSuretyApp.submitOracleResponse(oracleIndexes[i],
                         contract.firstAirline,
                         flight,
                         timestamp,
@@ -257,7 +255,7 @@ contract('Flight Surety Tests', async (accounts) => {
                 }
                 catch(e) {
                     // Enable this when debugging
-                    console.log('\nError', idx, oracleIndexes[idx].toNumber(), flight, timestamp);
+                    console.log('\nError', i, oracleIndexes[i].toNumber(), flight, timestamp);
                 }
             }
         }

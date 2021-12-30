@@ -17,7 +17,6 @@ const ELEMENT_DATA: FlightElement[] = [
   styleUrls: ['./airline.component.scss']
 })
 export class AirlineComponent implements AfterViewInit {
-  displayedColumns: string[] = ['name', 'address', 'fund'];
   dataSource = ELEMENT_DATA;
 
   airlineAddress: string = '';
@@ -25,6 +24,8 @@ export class AirlineComponent implements AfterViewInit {
   amount = 0;
   timestamp: string = '';
   flightNumber: string = '';
+  airlineAccount: string = '';
+  airlineFlightAccount: string = '';
 
   constructor(private contractConnectionService: ContractConnectionService) { }
 
@@ -38,11 +39,11 @@ export class AirlineComponent implements AfterViewInit {
     this.contractConnectionService.registerAirline(this.airlineAddress, this.airlineName);
   }
 
-  foundAirline(): void {
-    this.contractConnectionService.fundAirline(this.amount);
+  fundAirline(): void {
+    this.contractConnectionService.fundAirline(this.amount, this.airlineAccount);
   }
 
   registerNewFlight(): void {
-    this.contractConnectionService.registerNewFlight(this.flightNumber, this.timestamp);
+    this.contractConnectionService.registerNewFlight(this.flightNumber, this.timestamp, this.airlineFlightAccount);
   }
 }

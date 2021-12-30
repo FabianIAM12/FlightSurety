@@ -10,6 +10,7 @@ export class PassengerComponent implements OnInit {
   insuranceAmount: number = 0;
   selectedFlight: Flight | undefined;
   flights: Flight[] = [];
+  passengerAccount: string = '';
 
   constructor(private contractConnectionService: ContractConnectionService) { }
 
@@ -19,13 +20,14 @@ export class PassengerComponent implements OnInit {
         this.selectedFlight.address,
         this.selectedFlight.name,
         this.selectedFlight.timestamp,
-        this.insuranceAmount);
+        this.insuranceAmount,
+        this.passengerAccount);
     }
   }
 
   selectChange(event: any) {
     for (let i = 0; i < this.flights.length; i++) {
-      if (this.flights[i].address === event.value) {
+      if (this.flights[i].name === event.value) {
         this.selectedFlight = this.flights[i];
       }
     }

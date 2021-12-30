@@ -1,9 +1,8 @@
 <h1>Buy Insurance as passenger</h1>
-
 <mat-form-field appearance="fill">
   <mat-label>Select flight</mat-label>
   <mat-select (selectionChange)="selectChange($event)">
-    <mat-option *ngFor="let flight of flights" [value]="flight.address">
+    <mat-option *ngFor="let flight of flights" [value]="flight.name">
       {{ flight.name }}
     </mat-option>
   </mat-select>
@@ -25,7 +24,11 @@
     <mat-label>100</mat-label>
     <input matInput [(ngModel)]="insuranceAmount">
   </mat-form-field>
+  <h3>Passenger Account</h3>
+  <mat-form-field appearance="fill">
+    <mat-label>0xA81e8A03d583298510653EdCC378B1506cC483CD</mat-label>
+    <input matInput [(ngModel)]="passengerAccount">
+  </mat-form-field>
 </div>
-<br>
 <button mat-button style="background: lightgrey" (click)="buyInsurance()">Buy Insurance</button>
 <br>

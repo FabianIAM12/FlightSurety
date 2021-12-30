@@ -3,7 +3,7 @@ const FlightSuretyData = artifacts.require("FlightSuretyData");
 const fs = require('fs');
 
 module.exports = async (deployer) => {
-    // this is account #1 (#0 is deployer)
+    // this is account #1 (#0 is deployer & owner)
     let firstAirline = '0xD5668ff8F82Db63481ECaA0cfCB6F400Cdc27859';
     let firstAirlineName = 'Lufthansa';
 
@@ -27,6 +27,6 @@ module.exports = async (deployer) => {
         }
     };
 
-    fs.writeFileSync(__dirname + '/../src/dapp/config.json',JSON.stringify(config, null, '  '), 'utf-8');
+    fs.writeFileSync(__dirname + '/../src/dapp2/config.json',JSON.stringify(config, null, '  '), 'utf-8');
     fs.writeFileSync(__dirname + '/../src/server/config.json',JSON.stringify(config, null, '  '), 'utf-8');
 };

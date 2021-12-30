@@ -180,9 +180,19 @@ contract FlightSuretyApp {
         }
     }
 
-    // Request for oracles to fetch flight information
-    function fetchFlightStatus(address airline, string calldata flight, uint256 timestamp)
+    /**
+    * @dev Credit insurees as direct test approach for frontend
+     */
+    function creditInsurees(address airline, string calldata flight, uint256 timestamp, uint8 statusCode)
     external
+    {
+        if (statusCode == STATUS_CODE_LATE_AIRLINE) {
+            dataContract.creditInsurees(airline, flight, timestamp);
+        }
+    }
+
+    // Request for oracles to fetch flight information
+    function fetchFlightStatus(address airline, string calldata flight, uint256 timestamp) external
     {
         uint8 index = getRandomIndex(msg.sender);
         // Generate a unique key for storing the request
@@ -196,9 +206,6 @@ contract FlightSuretyApp {
     {
         return dataContract.getFlightStatus(airline, flight, timestamp);
     }
-
-
-    // region ORACLE MANAGEMENT
 
     // Incremented to add pseudo-randomness at various points
     uint8 private nonce = 0;
@@ -232,7 +239,6 @@ contract FlightSuretyApp {
 
     // Event fired each time an oracle submits a response
     event FlightStatusInfo(address airline, string flight, uint256 timestamp, uint8 status);
-
     event OracleReport(address airline, string flight, uint256 timestamp, uint8 status);
 
     // Event fired when flight status request is submitted

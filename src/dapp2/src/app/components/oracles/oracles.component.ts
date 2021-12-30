@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ContractConnectionService, Flight } from "../../services/contract-connection.service";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: 'app-oracles',
@@ -11,7 +12,8 @@ export class OraclesComponent implements OnInit {
   selectedFlight: Flight | undefined;
   flights: Flight[] = [];
 
-  constructor(private contractConnectionService: ContractConnectionService) { }
+  constructor(private contractConnectionService: ContractConnectionService,
+              private http: HttpClient) { }
 
   ngOnInit(): void {
     this.selectedFlight = this.contractConnectionService.flights[0];
@@ -20,12 +22,21 @@ export class OraclesComponent implements OnInit {
 
   selectChange(event: any) {
     for (let i = 0; i < this.flights.length; i++) {
-      if (this.flights[i].address === event.value) {
+      if (this.flights[i].name === event.value) {
         this.selectedFlight = this.flights[i];
       }
     }
   }
 
-  withdrawInsurance() {
+  fetchFlightStatus() {
+    this.contractConnectionService.fetchFlightStatus(this.selectedFlight);
+  }
+
+  withdraw() {
+    this.contractConnectionService.creditInsurees(this.selectedFlight);
+  }
+
+  testAPI() {
+    this.http.post(this.contractConnectionService.getConfig().url + '/api-test', {});
   }
 }

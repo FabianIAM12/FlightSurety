@@ -129,7 +129,7 @@ contract FlightSuretyData {
      */
     modifier requireFundedAirline(address airline)
     {
-        require(airlines[airline].isFunded, "Caller is not a properly funded airline");
+        require(airlines[airline].isFunded, "Caller is not a funded airline");
         _;
     }
 
@@ -189,9 +189,8 @@ contract FlightSuretyData {
     /********************************************************************************************/
 
     /**
-     * @dev Add an airline to the registration queue
+     * @dev Add an airline to the registration
      *      Can only be called from FlightSuretyApp contract
-     *
      */
     function registerAirline(address registeringAirline, address address_, string calldata name_)
     external
@@ -327,11 +326,10 @@ contract FlightSuretyData {
     returns (bool)
     {
         bytes32 key = getFlightKey(airline, name, timestamp);
-        // todo: bring back?
-        // require(flights[key].isRegistered && flights[key].statusCode == 0, "Flight cannot be insured for (already landed)");
+        require(flights[key].isRegistered && flights[key].statusCode == 0, "Flight cannot be insured for (already landed)");
 
         bytes32 ikey = getFlightInsuranceKey(passenger, key);
-        require(insurance[ikey] == 0, "Already bought flight insurance");
+        require(insurance[ikey] == 0, "Already bought the flight insurance");
 
         insurance[ikey] = amount;
         passengers[key].push(passenger);
@@ -363,6 +361,22 @@ contract FlightSuretyData {
     }
 
     /**
+     *  @dev Transfers eligible payout funds to insuree
+     *
+     */
+    function pay(address payable passenger)
+    external
+    requireIsOperational()
+    requireAppCaller()
+    {
+        uint payment = payouts[passenger];
+        if (payment > 0) {
+            payouts[passenger] = 0;
+            passenger.transfer(payment);
+        }
+    }
+
+    /**
      *  @dev Credits payouts to insurees
      */
     function creditInsurees(address airline, string calldata flight, uint256 timestamp)
@@ -385,22 +399,6 @@ contract FlightSuretyData {
             }
         }
         passengers[key] = new address[](0);
-    }
-
-    /**
-     *  @dev Transfers eligible payout funds to insuree
-     *
-     */
-    function pay(address payable passenger)
-    external
-    requireIsOperational()
-    requireAppCaller()
-    {
-        uint payment = payouts[passenger];
-        if (payment > 0) {
-            payouts[passenger] = 0;
-            passenger.transfer(payment);
-        }
     }
 
     /**
